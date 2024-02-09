@@ -1,0 +1,30 @@
+spring:
+  jpa:
+    hibernate:
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.HSQLDialect
+      ddl-auto: none #para que no cree las tablas de la bd que ya las tenemos, la que tiene en su config
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl #que funcione con los nombres de la bd
+  datasource:
+    driver-class-name: org.hsqldb.jdbcDriver
+    url: jdbc:hsqldb:hsql://localhost:9013/AppBank
+    username: SA
+    password:
+  security:
+    user:
+      name: usuario
+      password: contraseña
+      roles: USER
+server:
+  port: 30030
+logging:
+  level: #niveles del log desde fatal a trace
+    org:
+      hibernate:
+        SQL: debug
+      type:
+        descriptor:
+          sql: trace
