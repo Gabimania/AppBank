@@ -60,27 +60,26 @@ public class CustomerService implements ICustomerService {
        return id;
     }
 
-    @Override
-    public void contractProduct(int id_customer, int id_product) {
-        Customer customer = customerDao.findById(id_customer).orElseThrow(()-> new RuntimeException("Cliente no encontrado con ID: " + id_customer));
-        Product product = productDao.findById(id_product).orElseThrow(()->new RuntimeException("Producto no encontrado con ID: " + id_product));
-        if (productIsContracted(id_customer, id_product)) {
-            throw new RuntimeException("El cliente ya ha contratado este producto.");
-        }
+    public void contractProduct(int id_customer, int id_product){
+        Customer customer = customerDao.findById(id_customer).
+                orElseThrow(() -> new RuntimeException("Costumer not found"));
+        Product product = productDao.findById(id_product)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+        ContractedProduct contractedProduct = new ContractedProduct();
+        contractedProduct.setCustomer(customer);
+        contractedProduct.setProduct(product);
 
-        ContractedProduct productosContratados = new ContractedProduct();
-
-        // Guardar la entidad en la base de datos
-        productosContratadosDao.save(productosContratados);
-
-
-
+        productosContratadosDao.save(contractedProduct);
     }
 
-    @Override
-    public boolean productIsContracted(int id_customer, int id_product) {
-        return productosContratadosDao.existsByCustomer_IdCustomerAndProduct_IdProduct(id_customer,id_product);
-    }
+public void deleteContractedProduct(int id_product, int id_customer){
+        ContractedProduct contractedProduct = productosContratadosDao.findByProduct_IdProductAndCustomer_IdCustomer(id_product,id_customer)
+            .orElseThrow(() -> new RuntimeException("Product not contracted"));
+
+        productosContratadosDao.delete(contractedProduct);
+
+
+}
     }
 
 

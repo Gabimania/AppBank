@@ -36,8 +36,5 @@ public class CustomerController {
         return customerService.deleteCustomer(customerDTO);
     }
 
-    @GetMapping(value = "/info")
-    public String info(){
-        return customerService.contratar();
-    }
+
 }
