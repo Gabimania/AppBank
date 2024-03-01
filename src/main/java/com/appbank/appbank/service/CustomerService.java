@@ -59,7 +59,7 @@ public class CustomerService implements ICustomerService {
        customerDao.delete(customer);
        return id;
     }
-
+    @Override
     public void contractProduct(int id_customer, int id_product){
         Customer customer = customerDao.findById(id_customer).
                 orElseThrow(() -> new RuntimeException("Costumer not found"));
@@ -71,6 +71,7 @@ public class CustomerService implements ICustomerService {
 
         productosContratadosDao.save(contractedProduct);
     }
+    @Override
 
 public void deleteContractedProduct(int id_product, int id_customer){
         ContractedProduct contractedProduct = productosContratadosDao.findByProduct_IdProductAndCustomer_IdCustomer(id_product,id_customer)

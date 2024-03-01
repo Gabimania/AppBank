@@ -4,7 +4,9 @@ import com.appbank.appbank.Customer;
 import com.appbank.appbank.api.ICustomerService;
 import com.appbank.appbank.model.dto.CustomerDTO;
 import com.appbank.appbank.model.dto.EmployeeDTO;
+import com.appbank.appbank.model.dto.ProductDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,6 +36,21 @@ public class CustomerController {
     @DeleteMapping(value = "/delete")
     public int deleteCustomer(@RequestBody CustomerDTO customerDTO){
         return customerService.deleteCustomer(customerDTO);
+    }
+
+    @PostMapping(value = "/contractproduct")
+    public ResponseEntity<String> contractProduct(@RequestBody CustomerDTO customerDTO, @RequestBody ProductDTO productDTO){
+        int id_customer = customerDTO.getId_customer();
+        int id_product = productDTO.getId_product();
+        customerService.contractProduct(id_customer,id_product);
+        return ResponseEntity.ok("The product has been contracted successfully");
+    }
+    @DeleteMapping("/deleteproduct")
+    public ResponseEntity<String> deleteProduct(@RequestBody CustomerDTO customerDTO, @RequestBody ProductDTO productDTO){
+        int id_customer = customerDTO.getId_customer();
+        int id_product = productDTO.getId_product();
+        customerService.deleteContractedProduct(id_product, id_customer);
+        return ResponseEntity.ok("The product has been uncontracted");
     }
 
 
