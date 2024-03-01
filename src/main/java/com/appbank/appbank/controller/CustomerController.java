@@ -1,9 +1,8 @@
 package com.appbank.appbank.controller;
 
-import com.appbank.appbank.Customer;
 import com.appbank.appbank.api.ICustomerService;
+import com.appbank.appbank.model.dto.ContractRequestDTO;
 import com.appbank.appbank.model.dto.CustomerDTO;
-import com.appbank.appbank.model.dto.EmployeeDTO;
 import com.appbank.appbank.model.dto.ProductDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -39,16 +38,22 @@ public class CustomerController {
     }
 
     @PostMapping(value = "/contractproduct")
-    public ResponseEntity<String> contractProduct(@RequestBody CustomerDTO customerDTO, @RequestBody ProductDTO productDTO){
+    public ResponseEntity<String> contractProduct(@RequestBody ContractRequestDTO contractRequestDTO) {
+        int id_customer = contractRequestDTO.getId_customer();
+        int id_product = contractRequestDTO.getId_product();
+        customerService.contractProduct(id_customer, id_product);
+        return ResponseEntity.ok("The product has been contracted successfully");
+    }
+   /* public ResponseEntity<String> contractProduct(@RequestBody CustomerDTO customerDTO, @RequestBody ProductDTO productDTO){
         int id_customer = customerDTO.getId_customer();
         int id_product = productDTO.getId_product();
         customerService.contractProduct(id_customer,id_product);
         return ResponseEntity.ok("The product has been contracted successfully");
-    }
+    }*/
     @DeleteMapping("/deleteproduct")
-    public ResponseEntity<String> deleteProduct(@RequestBody CustomerDTO customerDTO, @RequestBody ProductDTO productDTO){
-        int id_customer = customerDTO.getId_customer();
-        int id_product = productDTO.getId_product();
+    public ResponseEntity<String> deleteProduct(@RequestBody ContractRequestDTO contractRequestDTO){
+        int id_customer = contractRequestDTO.getId_customer();
+        int id_product = contractRequestDTO.getId_product();
         customerService.deleteContractedProduct(id_product, id_customer);
         return ResponseEntity.ok("The product has been uncontracted");
     }
