@@ -1,6 +1,5 @@
 package com.appbank.appbank.service;
 
-import com.appbank.appbank.Employee;
 import com.appbank.appbank.api.ICustomerService;
 import com.appbank.appbank.model.ContractedProduct;
 import com.appbank.appbank.model.Customer;
@@ -10,7 +9,6 @@ import com.appbank.appbank.model.dao.ProductDao;
 import com.appbank.appbank.model.dao.ProductosContratadosDao;
 import com.appbank.appbank.model.dto.CustomerDTO;
 import com.appbank.appbank.model.dto.dtomapper.CustomerMapper;
-import com.appbank.appbank.model.dto.dtomapper.EmployeeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -72,13 +70,11 @@ public class CustomerService implements ICustomerService {
         productosContratadosDao.save(contractedProduct);
     }
     @Override
-
-public void deleteContractedProduct(int id_product, int id_customer){
-        ContractedProduct contractedProduct = productosContratadosDao.findByProduct_IdProductAndCustomer_IdCustomer(id_product,id_customer)
-            .orElseThrow(() -> new RuntimeException("Product not contracted"));
+    public void deleteContractedProduct(int id_producto_contratado){
+ContractedProduct contractedProduct = productosContratadosDao.findById(id_producto_contratado)
+.orElseThrow(() -> new RuntimeException("Contracted product not found"));
 
         productosContratadosDao.delete(contractedProduct);
-
 
 }
     }

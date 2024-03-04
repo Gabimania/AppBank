@@ -10,8 +10,8 @@ public interface ProductosContratadosDao extends JpaRepository<ContractedProduct
 
    // Optional<ContractedProduct> findByProduct_IdProductAndCustomer_IdCustomer(int id_product, int id_customer);
 
-    @Query("SELECT cp FROM ContractedProduct cp WHERE cp.product.id_product = :idProduct AND cp.customer.id_customer = :idCustomer")
-    Optional<ContractedProduct> findByProduct_IdProductAndCustomer_IdCustomer(int idProduct, int idCustomer);
+   // @Query("SELECT cp FROM ContractedProduct cp WHERE cp.product.id_product = :idProduct AND cp.customer.id_customer = :idCustomer")
+   // Optional<ContractedProduct> findByProduct_IdProductAndCustomer_IdCustomer(int idProduct, int idCustomer);
 
 }
 

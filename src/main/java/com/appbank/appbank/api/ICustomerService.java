@@ -11,7 +11,6 @@ public interface ICustomerService {
     int updateCustomer(CustomerDTO customerDTO);
     int deleteCustomer(CustomerDTO customerDTO);
     void contractProduct(int id_customer, int id_product);
-    void deleteContractedProduct(int id_product, int id_customer);
-
+    void deleteContractedProduct(int id_producto_contratado);
 
 }
