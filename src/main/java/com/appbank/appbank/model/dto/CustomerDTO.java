@@ -17,6 +17,28 @@ public class CustomerDTO {
 
     private Integer password;
 
+    public CustomerDTO(String name, String dni, Integer password) {
+        this.name = name;
+        this.dni = dni;
+        this.password = password;
+    }
+
+    public CustomerDTO() {
+    }
+
+    public CustomerDTO(int id_customer, String name, String surname, String phone, String email, String dni, Date birth_date, Date date_added, String gender, Integer password) {
+        this.id_customer = id_customer;
+        this.name = name;
+        this.surname = surname;
+        this.phone = phone;
+        this.email = email;
+        this.dni = dni;
+        this.birth_date = birth_date;
+        this.date_added = date_added;
+        this.gender = gender;
+        this.password = password;
+    }
+
     public int getId_customer() {
         return id_customer;
     }
