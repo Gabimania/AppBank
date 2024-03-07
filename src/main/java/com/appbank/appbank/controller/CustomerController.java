@@ -55,6 +55,12 @@ public class CustomerController {
         }
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout() {
+        customerService.logout();
+        return ResponseEntity.ok("Logout successful");
+    }
+
     @PostMapping(value = "/contractproduct")
     public ResponseEntity<String> contractProduct(@RequestBody ContractRequestDTO contractRequestDTO) {
         try{
@@ -84,7 +90,16 @@ public class CustomerController {
         }catch  (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("This product doesn´t exist in your profile");
         }
+    }
 
+    @GetMapping("/{id_customer}/contractedProducts")
+    public ResponseEntity<List<ProductDTO>> getContractedProducts(@PathVariable int id_customer) {
+        try {
+            List<ProductDTO> contractedProducts = customerService.getContractedProductsByCustomer(id_customer);
+            return ResponseEntity.ok(contractedProducts);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
 

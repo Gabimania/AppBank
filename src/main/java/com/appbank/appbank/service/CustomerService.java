@@ -8,12 +8,15 @@ import com.appbank.appbank.model.dao.CustomerDao;
 import com.appbank.appbank.model.dao.ProductDao;
 import com.appbank.appbank.model.dao.ProductosContratadosDao;
 import com.appbank.appbank.model.dto.CustomerDTO;
+import com.appbank.appbank.model.dto.ProductDTO;
 import com.appbank.appbank.model.dto.dtomapper.CustomerMapper;
+import com.appbank.appbank.model.dto.dtomapper.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service("CustomerService")
 @Lazy
@@ -70,9 +73,15 @@ public class CustomerService implements ICustomerService {
             return false;
         }
     }
-
+    @Override
     public boolean isCustomerLogged(){
         return customerLogged != null;
+    }
+
+    @Override
+    public void logout() {
+        // Lógica para cerrar sesión
+        customerLogged = null;
     }
 
     @Override
@@ -102,6 +111,21 @@ public class CustomerService implements ICustomerService {
         }else{
             throw new RuntimeException("User not logged in");
         }
+
+
+}
+
+@Override
+public List<ProductDTO> getContractedProductsByCustomer(int id_customer){
+        Customer customer = customerDao.findById(id_customer)
+                .orElseThrow(()-> new RuntimeException("Customer not found"));
+        List<ContractedProduct> contractedProducts = productosContratadosDao.findByCustomer(customer);
+
+    List<ProductDTO> contractedProductByUser = contractedProducts.stream()
+            .map(contractedProduct -> ProductMapper.INSTANCE.toDTO(contractedProduct.getProduct()))
+            .collect(Collectors.toList());
+
+    return contractedProductByUser;
 
 
 }
