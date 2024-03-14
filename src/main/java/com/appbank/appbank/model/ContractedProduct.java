@@ -1,11 +1,16 @@
 package com.appbank.appbank.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "PRODUCTOS_CONTRATADOS", schema = "APPBANK")
+@JsonIgnoreProperties("operationDone")
 
 public class ContractedProduct {
     @Id
@@ -19,6 +24,9 @@ public class ContractedProduct {
     @ManyToOne
     @JoinColumn(name = "PRODUCTS_ID_PRODUCT")
     private Product product;
+
+    @OneToMany(mappedBy = "contractedProduct", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OperationDone> operationDone;
 
     public int getId_producto_contratado() {
         return id_producto_contratado;
@@ -43,4 +51,14 @@ public class ContractedProduct {
     public void setProduct(Product product) {
         this.product = product;
     }
+
+    public List<OperationDone> getOperationDone() {
+        return operationDone;
+    }
+
+    public void setOperationDone(List<OperationDone> operationDone) {
+        this.operationDone = operationDone;
+    }
+
+
 }

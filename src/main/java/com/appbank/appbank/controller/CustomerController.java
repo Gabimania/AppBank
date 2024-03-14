@@ -1,8 +1,10 @@
 package com.appbank.appbank.controller;
 
 import com.appbank.appbank.api.ICustomerService;
+import com.appbank.appbank.model.OperationDone;
 import com.appbank.appbank.model.dto.ContractRequestDTO;
 import com.appbank.appbank.model.dto.CustomerDTO;
+import com.appbank.appbank.model.dto.OperationRequestDTO;
 import com.appbank.appbank.model.dto.ProductDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -100,6 +102,22 @@ public class CustomerController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
+    }
+
+    @PostMapping("/doOperation")
+    public ResponseEntity<String> doAnOperation(@RequestBody OperationRequestDTO operationRequestDTO){
+                int id_producto_contratado = operationRequestDTO.getId_producto_contratado();
+                int id_operation = operationRequestDTO.getId_operation();
+                int amount = operationRequestDTO.getAmount();
+
+                customerService.doAnOperation(id_producto_contratado, id_operation,amount);
+                return ResponseEntity.ok("Operation completed successfully");
+    }
+
+    @GetMapping("/allOperationsDone")
+    public ResponseEntity<List<OperationDone>> getAllOperationsByCustomer(){
+        List<OperationDone> operations = customerService.getAllOperationsByCustomer();
+        return ResponseEntity.ok(operations);
     }
 
 

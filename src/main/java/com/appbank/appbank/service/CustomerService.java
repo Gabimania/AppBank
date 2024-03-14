@@ -1,12 +1,8 @@
 package com.appbank.appbank.service;
 
 import com.appbank.appbank.api.ICustomerService;
-import com.appbank.appbank.model.ContractedProduct;
-import com.appbank.appbank.model.Customer;
-import com.appbank.appbank.model.Product;
-import com.appbank.appbank.model.dao.CustomerDao;
-import com.appbank.appbank.model.dao.ProductDao;
-import com.appbank.appbank.model.dao.ProductosContratadosDao;
+import com.appbank.appbank.model.*;
+import com.appbank.appbank.model.dao.*;
 import com.appbank.appbank.model.dto.CustomerDTO;
 import com.appbank.appbank.model.dto.ProductDTO;
 import com.appbank.appbank.model.dto.dtomapper.CustomerMapper;
@@ -15,6 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +29,12 @@ public class CustomerService implements ICustomerService {
 
     @Autowired
     private ProductosContratadosDao productosContratadosDao;
+
+    @Autowired
+    private OperationDao operationDao;
+
+    @Autowired
+    private OperationDoneDao operationDoneDao;
 
     private CustomerDTO customerLogged;
 
@@ -57,24 +63,25 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public int deleteCustomer(CustomerDTO customerDTO) {
-       int id = customerDTO.getId_customer();
-       Customer customer = CustomerMapper.INSTANCE.toEntity(customerDTO);
-       customerDao.delete(customer);
-       return id;
+        int id = customerDTO.getId_customer();
+        Customer customer = CustomerMapper.INSTANCE.toEntity(customerDTO);
+        customerDao.delete(customer);
+        return id;
     }
 
     @Override
-    public boolean login(String name, String dni, int password){
+    public boolean login(String name, String dni, int password) {
         Customer customer = customerDao.findByNameAndDniAndPassword(name, dni, password);
-        if(customer != null){
-            customerLogged = new CustomerDTO(customer.getName(),customer.getDni(),customer.getPassword());
+        if (customer != null) {
+            customerLogged = new CustomerDTO(customer.getId_customer(),customer.getName(), customer.getDni(), customer.getPassword());
             return true;
-        }else{
+        } else {
             return false;
         }
     }
+
     @Override
-    public boolean isCustomerLogged(){
+    public boolean isCustomerLogged() {
         return customerLogged != null;
     }
 
@@ -85,8 +92,8 @@ public class CustomerService implements ICustomerService {
     }
 
     @Override
-    public void contractProduct(int id_customer, int id_product){
-        if(isCustomerLogged()){
+    public void contractProduct(int id_customer, int id_product) {
+        if (isCustomerLogged()) {
             Customer customer = customerDao.findById(id_customer).
                     orElseThrow(() -> new RuntimeException("Costumer not found"));
             Product product = productDao.findById(id_product)
@@ -96,42 +103,86 @@ public class CustomerService implements ICustomerService {
             contractedProduct.setProduct(product);
 
             productosContratadosDao.save(contractedProduct);
-        }else{
+        } else {
             throw new RuntimeException("User not logged in");
         }
 
     }
+
     @Override
-    public void deleteContractedProduct(int id_producto_contratado){
-        if(isCustomerLogged()){
+    public void deleteContractedProduct(int id_producto_contratado) {
+        if (isCustomerLogged()) {
             ContractedProduct contractedProduct = productosContratadosDao.findById(id_producto_contratado)
                     .orElseThrow(() -> new RuntimeException("Contracted product not found"));
 
             productosContratadosDao.delete(contractedProduct);
-        }else{
+        } else {
             throw new RuntimeException("User not logged in");
         }
 
 
-}
-
-@Override
-public List<ProductDTO> getContractedProductsByCustomer(int id_customer){
-        Customer customer = customerDao.findById(id_customer)
-                .orElseThrow(()-> new RuntimeException("Customer not found"));
-        List<ContractedProduct> contractedProducts = productosContratadosDao.findByCustomer(customer);
-
-    List<ProductDTO> contractedProductByUser = contractedProducts.stream()
-            .map(contractedProduct -> ProductMapper.INSTANCE.toDTO(contractedProduct.getProduct()))
-            .collect(Collectors.toList());
-
-    return contractedProductByUser;
-
-
-}
     }
 
+    @Override
+    public List<ProductDTO> getContractedProductsByCustomer(int id_customer) {
+        Customer customer = customerDao.findById(id_customer)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+        List<ContractedProduct> contractedProducts = productosContratadosDao.findByCustomer(customer);
 
+        List<ProductDTO> contractedProductByUser = contractedProducts.stream()
+                .map(contractedProduct -> ProductMapper.INSTANCE.toDTO(contractedProduct.getProduct()))
+                .collect(Collectors.toList());
+
+        return contractedProductByUser;
+
+
+    }
+
+    @Override
+    public void doAnOperation(int id_producto_contratado, int id_operation, int amount) {
+        if(isCustomerLogged()){
+            ContractedProduct contractedProduct = productosContratadosDao.findById(id_producto_contratado)
+                    .orElseThrow(() -> new RuntimeException("Contracted Product not Found"));
+
+            Operation operation = operationDao.findById(id_operation)
+                    .orElseThrow(() -> new RuntimeException("Operation not found"));
+
+            OperationDone operationDone = new OperationDone();
+            operationDone.setContractedProduct(contractedProduct);
+            operationDone.setOperation(operation);
+            operationDone.setAmount(amount);
+            operationDoneDao.save(operationDone);
+        }else{
+            throw new RuntimeException("User not logged in");
+        }
+
+    }
+
+    @Override
+    public List<OperationDone> getAllOperationsByCustomer() {
+        if (isCustomerLogged()) {
+           Customer customer = customerDao.findById(customerLogged.getId_customer())
+                    .orElseThrow(() -> new RuntimeException("Customer not found"));
+
+
+        List<ContractedProduct> contractedProducts = productosContratadosDao.findByCustomer(customer);
+
+        List<OperationDone> operationDoneList = new ArrayList<>();
+        for(ContractedProduct contractedProduct: contractedProducts){
+            operationDoneList.addAll(contractedProduct.getOperationDone());
+        }
+
+        return operationDoneList;
+
+
+           // return contractedProducts.get(0).getOperationDone();
+        }
+        else{
+        throw new RuntimeException("User not logged in");
+    }
+}
+
+}
 
 
 

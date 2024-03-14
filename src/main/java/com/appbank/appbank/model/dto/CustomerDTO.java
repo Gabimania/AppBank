@@ -26,6 +26,13 @@ public class CustomerDTO {
     public CustomerDTO() {
     }
 
+    public CustomerDTO(int id_customer, String name, String dni, Integer password) {
+        this.id_customer = id_customer;
+        this.name = name;
+        this.dni = dni;
+        this.password = password;
+    }
+
     public CustomerDTO(int id_customer, String name, String surname, String phone, String email, String dni, Date birth_date, Date date_added, String gender, Integer password) {
         this.id_customer = id_customer;
         this.name = name;

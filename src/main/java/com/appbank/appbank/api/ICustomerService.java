@@ -1,5 +1,6 @@
 package com.appbank.appbank.api;
 
+import com.appbank.appbank.model.OperationDone;
 import com.appbank.appbank.model.dto.CustomerDTO;
 import com.appbank.appbank.model.dto.ProductDTO;
 
@@ -22,4 +23,8 @@ public interface ICustomerService {
     void deleteContractedProduct(int id_producto_contratado);
 
     List<ProductDTO> getContractedProductsByCustomer(int id_customer);
+
+    void doAnOperation(int id_producto_contratado, int id_operation, int amount);
+
+    List<OperationDone> getAllOperationsByCustomer();
 }
