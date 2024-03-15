@@ -12,9 +12,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,7 +71,7 @@ public class CustomerService implements ICustomerService {
     public boolean login(String name, String dni, int password) {
         Customer customer = customerDao.findByNameAndDniAndPassword(name, dni, password);
         if (customer != null) {
-            customerLogged = new CustomerDTO(customer.getId_customer(),customer.getName(), customer.getDni(), customer.getPassword());
+            customerLogged = new CustomerDTO(customer.getId_customer(), customer.getName(), customer.getDni(), customer.getPassword());
             return true;
         } else {
             return false;
@@ -140,7 +138,7 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public void doAnOperation(int id_producto_contratado, int id_operation, int amount) {
-        if(isCustomerLogged()){
+        if (isCustomerLogged()) {
             ContractedProduct contractedProduct = productosContratadosDao.findById(id_producto_contratado)
                     .orElseThrow(() -> new RuntimeException("Contracted Product not Found"));
 
@@ -152,7 +150,7 @@ public class CustomerService implements ICustomerService {
             operationDone.setOperation(operation);
             operationDone.setAmount(amount);
             operationDoneDao.save(operationDone);
-        }else{
+        } else {
             throw new RuntimeException("User not logged in");
         }
 
@@ -161,26 +159,46 @@ public class CustomerService implements ICustomerService {
     @Override
     public List<OperationDone> getAllOperationsByCustomer() {
         if (isCustomerLogged()) {
-           Customer customer = customerDao.findById(customerLogged.getId_customer())
+            Customer customer = customerDao.findById(customerLogged.getId_customer())
                     .orElseThrow(() -> new RuntimeException("Customer not found"));
 
 
-        List<ContractedProduct> contractedProducts = productosContratadosDao.findByCustomer(customer);
+            List<ContractedProduct> contractedProductsList = productosContratadosDao.findByCustomer(customer);
 
-        List<OperationDone> operationDoneList = new ArrayList<>();
-        for(ContractedProduct contractedProduct: contractedProducts){
-            operationDoneList.addAll(contractedProduct.getOperationDone());
+            List<OperationDone> operationDoneList = new ArrayList<>();
+            for (ContractedProduct contractedProduct : contractedProductsList) {
+                operationDoneList.addAll(contractedProduct.getOperationDone());
+            }
+
+            return operationDoneList;
+
+        } else {
+            throw new RuntimeException("User not logged in");
         }
-
-        return operationDoneList;
-
-
-           // return contractedProducts.get(0).getOperationDone();
-        }
-        else{
-        throw new RuntimeException("User not logged in");
     }
-}
+
+    @Override
+    public List<OperationDone> getOperationsByContractedProduct(int id_product) {
+        if (isCustomerLogged()) {
+            Product product = productDao.findById(id_product)
+                    .orElseThrow(() -> new RuntimeException("Product not found."));
+
+            List<ContractedProduct> contractedProducts = productosContratadosDao.findByProduct(product);
+
+            if (!contractedProducts.isEmpty()) {
+                List<OperationDone> operationDoneList = new ArrayList<>();
+                for (ContractedProduct contractedProduct : contractedProducts) {
+                    operationDoneList.addAll(contractedProduct.getOperationDone());
+                }
+                return operationDoneList;
+            } else {
+                throw new RuntimeException("The customer does not have this product contracted.");
+            }
+        } else {
+            throw new RuntimeException("User not logged in");
+        }
+    }
+
 
 }
 

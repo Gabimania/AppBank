@@ -2,6 +2,7 @@ package com.appbank.appbank.controller;
 
 import com.appbank.appbank.api.ICustomerService;
 import com.appbank.appbank.model.OperationDone;
+import com.appbank.appbank.model.Product;
 import com.appbank.appbank.model.dto.ContractRequestDTO;
 import com.appbank.appbank.model.dto.CustomerDTO;
 import com.appbank.appbank.model.dto.OperationRequestDTO;
@@ -119,6 +120,15 @@ public class CustomerController {
         List<OperationDone> operations = customerService.getAllOperationsByCustomer();
         return ResponseEntity.ok(operations);
     }
+
+    @PostMapping("/allOperationdDoneByProduct")
+    public ResponseEntity<List<OperationDone>> getAllOperationsByProduct (@RequestBody ProductDTO productDTO){
+        int id_product = productDTO.getId_product();
+       List<OperationDone> operations= customerService.getOperationsByContractedProduct(id_product);
+        return  ResponseEntity.ok(operations);
+    }
+
+
 
 
 }

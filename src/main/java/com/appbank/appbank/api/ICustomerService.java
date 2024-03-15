@@ -27,4 +27,7 @@ public interface ICustomerService {
     void doAnOperation(int id_producto_contratado, int id_operation, int amount);
 
     List<OperationDone> getAllOperationsByCustomer();
+
+
+    List<OperationDone> getOperationsByContractedProduct(int id_product);
 }
