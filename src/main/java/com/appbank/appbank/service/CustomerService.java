@@ -178,28 +178,18 @@ public class CustomerService implements ICustomerService {
     }
 
     @Override
-    public List<OperationDone> getOperationsByContractedProduct(int id_product) {
+    public List<OperationDone> getOperationsByContractedProduct(int id_producto_contratado) {
+
         if (isCustomerLogged()) {
-            Product product = productDao.findById(id_product)
-                    .orElseThrow(() -> new RuntimeException("Product not found."));
+            ContractedProduct contractedProduct = productosContratadosDao.findById(id_producto_contratado)
+                    .orElseThrow(() -> new RuntimeException("Contracted product not found."));
 
-            List<ContractedProduct> contractedProducts = productosContratadosDao.findByProduct(product);
-
-            if (!contractedProducts.isEmpty()) {
-                List<OperationDone> operationDoneList = new ArrayList<>();
-                for (ContractedProduct contractedProduct : contractedProducts) {
-                    operationDoneList.addAll(contractedProduct.getOperationDone());
-                }
-                return operationDoneList;
-            } else {
-                throw new RuntimeException("The customer does not have this product contracted.");
-            }
+            return contractedProduct.getOperationDone();
         } else {
             throw new RuntimeException("User not logged in");
         }
-    }
 
-
+}
 }
 
 

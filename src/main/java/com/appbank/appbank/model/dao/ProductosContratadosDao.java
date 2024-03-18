@@ -14,6 +14,8 @@ public interface ProductosContratadosDao extends JpaRepository<ContractedProduct
 
     List<ContractedProduct> findByProduct(Product product);
 
+    //List<ContractedProduct> findByProduct(Product product);
+
 
     // Optional<ContractedProduct> findByProduct_IdProductAndCustomer_IdCustomer(int id_product, int id_customer);
 
